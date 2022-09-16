@@ -23,12 +23,30 @@ namespace BackEndForClinicAPI.Migrations
                 {
                     table.PrimaryKey("PK_Contacts", x => x.Id);
                 });
+
+            migrationBuilder.CreateTable(
+                name: "Doctors",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Phone = table.Column<long>(type: "bigint", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Doctors", x => x.Id);
+                });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
                 name: "Contacts");
+
+            migrationBuilder.DropTable(
+                name: "Doctors");
         }
     }
 }

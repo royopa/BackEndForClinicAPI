@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BackEndForClinicAPI.Migrations
 {
     [DbContext(typeof(BackEndForClinicAPIDBContext))]
-    [Migration("20220915135514_Initial Migration")]
+    [Migration("20220916084052_Initial Migration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -48,6 +48,32 @@ namespace BackEndForClinicAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Contacts");
+                });
+
+            modelBuilder.Entity("BackEndForClinicAPI.Models.Doctor", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("Phone")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Doctors");
                 });
 #pragma warning restore 612, 618
         }
