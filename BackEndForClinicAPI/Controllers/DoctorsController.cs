@@ -1,4 +1,5 @@
 ﻿using BackEndForClinicAPI.Data;
+using BackEndForClinicAPI.Helpers;
 using BackEndForClinicAPI.Interfaces;
 using BackEndForClinicAPI.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -49,7 +50,7 @@ namespace BackEndForClinicAPI.Controllers
                 EmailAddress = addDoctorRequest.EmailAddress,
                 Phone = addDoctorRequest.Phone,
                 Surname = addDoctorRequest.Surname,
-                Role = addDoctorRequest.Role,
+                Role = Roles.DOCTOR.ToString(),
                 Specialty = addDoctorRequest.Specialty,
                 UserName = addDoctorRequest.UserName,
                 Password = addDoctorRequest.Password
@@ -94,7 +95,7 @@ namespace BackEndForClinicAPI.Controllers
                 doctor.GivenName = updateDoctorRequest.GivenName;
                 doctor.UserName = updateDoctorRequest.UserName;
                 doctor.Password = updateDoctorRequest.Password;
-                doctor.Role = updateDoctorRequest.Role;
+                doctor.Role = Roles.DOCTOR.ToString();
                 doctor.EmailAddress = updateDoctorRequest.EmailAddress;
                 doctor.Phone = updateDoctorRequest.Phone;
                 doctor.Address = updateDoctorRequest.Address;

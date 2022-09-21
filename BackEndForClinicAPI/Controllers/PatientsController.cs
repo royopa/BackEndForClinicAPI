@@ -1,4 +1,5 @@
 ﻿using BackEndForClinicAPI.Data;
+using BackEndForClinicAPI.Helpers;
 using BackEndForClinicAPI.Interfaces;
 using BackEndForClinicAPI.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -28,8 +29,14 @@ namespace BackEndForClinicAPI.Controllers
                 Id = Guid.NewGuid(),
                 Address = addPatientRequest.Address,
                 FullName = addPatientRequest.FullName,
-                EmailAddress = addPatientRequest.Email,
-                Phone = addPatientRequest.Phone
+                EmailAddress = addPatientRequest.EmailAddress,
+                Phone = addPatientRequest.Phone,
+                GivenName = addPatientRequest.GivenName,
+                InsuranceNumber = addPatientRequest.InsuranceNumber,
+                Password = addPatientRequest.Password,
+                Role = Roles.PATIENT.ToString(),
+                Surname = addPatientRequest.Surname,
+                UserName = addPatientRequest.UserName
             };
 
             await dbContext.Patients.AddAsync(patient);
@@ -90,10 +97,14 @@ namespace BackEndForClinicAPI.Controllers
 
             if (patient != null)
             {
-                patient.EmailAddress = updatePatientRequest.Email;
+                patient.EmailAddress = updatePatientRequest.EmailAddress;
                 patient.Phone = updatePatientRequest.Phone;
                 patient.Address = updatePatientRequest.Address;
                 patient.FullName = updatePatientRequest.FullName;
+                patient.Surname = updatePatientRequest.Surname;
+                patient.UserName = updatePatientRequest.UserName;
+                patient.InsuranceNumber = updatePatientRequest.InsuranceNumber;
+                patient.GivenName = updatePatientRequest.GivenName;
                 await dbContext.SaveChangesAsync();
 
                 return Ok(patient);

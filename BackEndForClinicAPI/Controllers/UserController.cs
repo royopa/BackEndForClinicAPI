@@ -1,4 +1,5 @@
-﻿using BackEndForClinicAPI.Models;
+﻿using BackEndForClinicAPI.Helpers;
+using BackEndForClinicAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -27,6 +28,28 @@ namespace BackEndForClinicAPI.Controllers
             return Ok($"Hi {currentUser.GivenName}, you are an {currentUser.Role}");
         }
 
+
+        [HttpGet("Patient")]
+        [Authorize(Roles = nameof(Roles.PATIENT))]
+        public IActionResult PatientsEndpoint()
+        {
+            var currentUser = GetCurrentUser();
+
+            return Ok($"Hi {currentUser.GivenName}, you are an {currentUser.Role}");
+        }
+
+
+        [HttpGet("Doctor")]
+        [Authorize(Roles = nameof(Roles.DOCTOR))]
+        public IActionResult DoctorsEndpoint()
+        {
+            var currentUser = GetCurrentUser();
+
+            return Ok($"Hi {currentUser.GivenName}, you are an {currentUser.Role}");
+        }
+
+
+
         [HttpGet("Sellers")]
         [Authorize(Roles = "Seller")]
         public IActionResult SellersEndpoint()
@@ -44,6 +67,8 @@ namespace BackEndForClinicAPI.Controllers
 
             return Ok($"Hi {currentUser.GivenName}, you are an {currentUser.Role}");
         }
+
+
 
         private UserModel GetCurrentUser()
         {
