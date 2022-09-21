@@ -43,7 +43,7 @@ namespace BackEndForClinicAPI.Controllers
             var doctor = new Doctor()
             {
                 Id = Guid.NewGuid(),
-                GivenName = addDoctorRequest.
+                GivenName = addDoctorRequest.GivenName,
                 Address = addDoctorRequest.Address,
                 FullName = addDoctorRequest.FullName,
                 EmailAddress = addDoctorRequest.EmailAddress,

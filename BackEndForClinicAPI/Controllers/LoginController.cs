@@ -1,9 +1,13 @@
-﻿using BackEndForClinicAPI.Models;
+﻿using BackEndForClinicAPI.Data;
+using BackEndForClinicAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Numerics;
 using System.Security.Claims;
 using System.Text;
 
@@ -14,20 +18,24 @@ namespace BackEndForClinicAPI.Controllers
     public class LoginController : ControllerBase
     {
         private IConfiguration _configuration;
+        private readonly BackEndForClinicAPIDBContext dbContext;
 
-        public LoginController(IConfiguration configuration)
+        public LoginController(IConfiguration configuration, BackEndForClinicAPIDBContext dbContext)
         {
             _configuration = configuration;
+            this.dbContext = dbContext;
         }
 
         [AllowAnonymous]
         [HttpPost]
-        public IActionResult Login(UserLogin userLogin)
+        [Route("{id:guid}")]
+        public async Task<IActionResult> Login([FromRoute] Guid id)
         {
-            var user = Authenticate(userLogin);
+            Doctor user = await Authenticate(id) as Doctor;
 
             if (user != null)
             {
+                
                 var token = Generate(user);
                 return Ok(token);
             }
@@ -35,7 +43,7 @@ namespace BackEndForClinicAPI.Controllers
             return NotFound("User not found.");
         }
 
-        private object Generate(UserModel userModel)
+        private object Generate(Doctor userModel)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -60,10 +68,10 @@ namespace BackEndForClinicAPI.Controllers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        private UserModel Authenticate(UserLogin userLogin)
+        private async Task<Doctor> Authenticate(Guid userId)
         {
-            var currentUser = UserConstants.Users.FirstOrDefault( o => o.UserName.ToLower() == userLogin.UserName.ToLower() && o.Password == userLogin.Password);
-            
+            var currentUser = await dbContext.Doctors.FindAsync(userId);
+
             if (currentUser != null)
             {
                 return currentUser;
