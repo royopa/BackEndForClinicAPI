@@ -43,10 +43,16 @@ namespace BackEndForClinicAPI.Controllers
             var doctor = new Doctor()
             {
                 Id = Guid.NewGuid(),
+                GivenName = addDoctorRequest.
                 Address = addDoctorRequest.Address,
                 FullName = addDoctorRequest.FullName,
-                Email = addDoctorRequest.Email,
-                Phone = addDoctorRequest.Phone
+                EmailAddress = addDoctorRequest.EmailAddress,
+                Phone = addDoctorRequest.Phone,
+                Surname = addDoctorRequest.Surname,
+                Role = addDoctorRequest.Role,
+                Specialty = addDoctorRequest.Specialty,
+                UserName = addDoctorRequest.UserName,
+                Password = addDoctorRequest.Password
             };
 
             await dbContext.Doctors.AddAsync(doctor);
@@ -83,7 +89,13 @@ namespace BackEndForClinicAPI.Controllers
 
             if (doctor != null)
             {
-                doctor.Email = updateDoctorRequest.Email;
+                doctor.Specialty = updateDoctorRequest.Specialty;
+                doctor.Surname = updateDoctorRequest.Surname;
+                doctor.GivenName = updateDoctorRequest.GivenName;
+                doctor.UserName = updateDoctorRequest.UserName;
+                doctor.Password = updateDoctorRequest.Password;
+                doctor.Role = updateDoctorRequest.Role;
+                doctor.EmailAddress = updateDoctorRequest.EmailAddress;
                 doctor.Phone = updateDoctorRequest.Phone;
                 doctor.Address = updateDoctorRequest.Address;
                 doctor.FullName = updateDoctorRequest.FullName;

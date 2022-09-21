@@ -28,7 +28,7 @@ namespace BackEndForClinicAPI.Controllers
                 Id = Guid.NewGuid(),
                 Address = addPatientRequest.Address,
                 FullName = addPatientRequest.FullName,
-                Email = addPatientRequest.Email,
+                EmailAddress = addPatientRequest.Email,
                 Phone = addPatientRequest.Phone
             };
 
@@ -90,7 +90,7 @@ namespace BackEndForClinicAPI.Controllers
 
             if (patient != null)
             {
-                patient.Email = updatePatientRequest.Email;
+                patient.EmailAddress = updatePatientRequest.Email;
                 patient.Phone = updatePatientRequest.Phone;
                 patient.Address = updatePatientRequest.Address;
                 patient.FullName = updatePatientRequest.FullName;
