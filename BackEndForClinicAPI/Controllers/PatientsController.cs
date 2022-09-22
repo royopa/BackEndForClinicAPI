@@ -4,6 +4,7 @@ using BackEndForClinicAPI.Interfaces;
 using BackEndForClinicAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Numerics;
 
 namespace BackEndForClinicAPI.Controllers
 {
@@ -33,7 +34,7 @@ namespace BackEndForClinicAPI.Controllers
                 Phone = addPatientRequest.Phone,
                 GivenName = addPatientRequest.GivenName,
                 InsuranceNumber = addPatientRequest.InsuranceNumber,
-                Password = addPatientRequest.Password,
+                Password = PasswordEncrypterDecrypter.EncryptPassword(addPatientRequest.Password.ToString().ToLower()),
                 Role = Roles.PATIENT.ToString(),
                 Surname = addPatientRequest.Surname,
                 UserName = addPatientRequest.UserName
@@ -76,6 +77,7 @@ namespace BackEndForClinicAPI.Controllers
                 return NotFound();
             }
 
+            patient.Password = PasswordEncrypterDecrypter.DecryptPassword(patient.Password);
             return Ok(patient);
         }
 
@@ -105,6 +107,7 @@ namespace BackEndForClinicAPI.Controllers
                 patient.UserName = updatePatientRequest.UserName;
                 patient.InsuranceNumber = updatePatientRequest.InsuranceNumber;
                 patient.GivenName = updatePatientRequest.GivenName;
+                patient.Password = PasswordEncrypterDecrypter.EncryptPassword(updatePatientRequest.Password.ToString().ToLower());
                 await dbContext.SaveChangesAsync();
 
                 return Ok(patient);
