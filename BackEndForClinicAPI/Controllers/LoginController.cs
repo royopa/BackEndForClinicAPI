@@ -41,16 +41,21 @@ namespace BackEndForClinicAPI.Controllers
                 
                 var token = GenerateToken(user);
                 var refreshToken = GenerateRefreshToken();
-                SetRefreshToken(refreshToken,user);
+                SetRefreshToken(refreshToken);
+
+                user.RefreshToken = refreshToken.Token;
+                user.TokenCreated = refreshToken.Created;
+                user.TokenExpires = refreshToken.Expires;
+                await dbContext.SaveChangesAsync();
                 return Ok(token);
             }
 
             return NotFound("User not found.");
         }
 
-        [HttpPost("refreshtoken")]
-        [Route("{id:guid}")]
-        public async Task<IActionResult> RefreshToken([FromRoute] Guid id)
+
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult?> RefreshToken(Guid id)
         {
 
             UserModel user = await Authenticate(id);
@@ -70,15 +75,21 @@ namespace BackEndForClinicAPI.Controllers
 
                 string token = (string)GenerateToken(user);
                 var newRefreshToken = GenerateRefreshToken();
-                SetRefreshToken(newRefreshToken,user);
-
+                SetRefreshToken(newRefreshToken);
+                user.RefreshToken = newRefreshToken.Token;
+                user.TokenCreated = newRefreshToken.Created;
+                user.TokenExpires = newRefreshToken.Expires;
+                await dbContext.SaveChangesAsync();
                 return Ok(token);
             }
-            return null;
-            
+
+            return NotFound("Invalid Refresh Token");
+
         }
 
-        private void SetRefreshToken(RefreshToken newRefreshToken, UserModel user)
+
+        [NonAction]
+        public void SetRefreshToken(RefreshToken newRefreshToken)
         {
             var cookieOptions = new CookieOptions
             {
@@ -87,11 +98,11 @@ namespace BackEndForClinicAPI.Controllers
             };
             
             Response.Cookies.Append("refreshToken",newRefreshToken.Token,cookieOptions);
-            user.RefreshToken = newRefreshToken.Token;
-            user.TokenCreated = newRefreshToken.Created;
-            user.TokenExpires = newRefreshToken.Expires;
+
         }
 
+
+        [NonAction]
         private RefreshToken GenerateRefreshToken()
         {
             var refreshToken = new RefreshToken
@@ -104,6 +115,8 @@ namespace BackEndForClinicAPI.Controllers
             return refreshToken;
         }
 
+
+        [NonAction]
         private object GenerateToken(UserModel userModel)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
@@ -130,6 +143,7 @@ namespace BackEndForClinicAPI.Controllers
         }
 
 
+        [NonAction]
         private async Task<UserModel> Authenticate(Guid userId)
         {
             UserModel currentUser = await dbContext.Doctors.FindAsync(userId);
