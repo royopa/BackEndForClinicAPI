@@ -35,9 +35,11 @@ namespace BackEndForClinicAPI.Controllers
                 return NotFound();
             }
 
+            doctor.Password = PasswordEncrypterDecrypter.DecryptPassword(doctor.Password);
             return Ok(doctor);
         }
 
+        
         [HttpPost]
         public async Task<IActionResult> AddDoctor(AddDoctorRequest addDoctorRequest)
         {
@@ -53,7 +55,7 @@ namespace BackEndForClinicAPI.Controllers
                 Role = Roles.DOCTOR.ToString(),
                 Specialty = addDoctorRequest.Specialty,
                 UserName = addDoctorRequest.UserName,
-                Password = addDoctorRequest.Password
+                Password = PasswordEncrypterDecrypter.EncryptPassword(addDoctorRequest.Password.ToString().ToLower())
             };
 
             await dbContext.Doctors.AddAsync(doctor);
@@ -94,7 +96,7 @@ namespace BackEndForClinicAPI.Controllers
                 doctor.Surname = updateDoctorRequest.Surname;
                 doctor.GivenName = updateDoctorRequest.GivenName;
                 doctor.UserName = updateDoctorRequest.UserName;
-                doctor.Password = updateDoctorRequest.Password;
+                doctor.Password = PasswordEncrypterDecrypter.EncryptPassword(updateDoctorRequest.Password.ToString().ToLower()),
                 doctor.Role = Roles.DOCTOR.ToString();
                 doctor.EmailAddress = updateDoctorRequest.EmailAddress;
                 doctor.Phone = updateDoctorRequest.Phone;
