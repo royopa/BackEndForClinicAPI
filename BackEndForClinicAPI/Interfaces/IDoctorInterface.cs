@@ -1,4 +1,4 @@
-﻿using BackEndForClinicAPI.Models;
+﻿using BackEndForClinicAPI.Helpers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BackEndForClinicAPI.Interfaces

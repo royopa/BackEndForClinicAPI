@@ -1,9 +1,11 @@
 ﻿using BackEndForClinicAPI.Data;
+using BackEndForClinicAPI.DTOs;
 using BackEndForClinicAPI.Helpers;
 using BackEndForClinicAPI.Interfaces;
 using BackEndForClinicAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using System.Numerics;
 
 namespace BackEndForClinicAPI.Controllers
@@ -14,6 +16,15 @@ namespace BackEndForClinicAPI.Controllers
     {
 
         private readonly BackEndForClinicAPIDBContext dbContext;
+
+        private static readonly Expression<Func<Doctor, DoctorListDTO>> AsDoctorsInTheClinicList =
+            x => new DoctorListDTO
+            {
+                DoctorName = x.Surname,
+                PhoneNumber = x.Phone,
+                Specialty = x.Specialty
+            };
+
 
         public PatientsController(BackEndForClinicAPIDBContext dbContext)
         {
@@ -114,6 +125,14 @@ namespace BackEndForClinicAPI.Controllers
             }
 
             return NotFound();
+        }
+
+
+        [HttpGet("doctors-list")]
+        public IQueryable<DoctorListDTO> GetListOfDoctors()
+        {
+            return dbContext.Doctors
+                .Select(AsDoctorsInTheClinicList);
         }
     }
 }
