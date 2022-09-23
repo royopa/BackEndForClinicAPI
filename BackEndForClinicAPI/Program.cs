@@ -1,4 +1,5 @@
 using BackEndForClinicAPI.Data;
+using BackEndForClinicAPI.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -30,6 +31,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 //builder.Services.AddDbContext<BackEndForClinicAPIDBContext>(options => options.UseInMemoryDatabase("ClinicDB"));
 builder.Services.AddDbContext<BackEndForClinicAPIDBContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("BackEndForClinicAPI")));
+builder.Services.AddSingleton<AuthenticationAndAuthorizationHelpers>();
 
 var app = builder.Build();
 
