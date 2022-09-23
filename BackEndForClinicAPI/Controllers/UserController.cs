@@ -12,6 +12,12 @@ namespace BackEndForClinicAPI.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+        //private AuthenticationAndAuthorizationHelpers _authenticationAndAuthorizationHelpers;
+        //public UserController(AuthenticationAndAuthorizationHelpers authenticationAndAuthorizationHelpers)
+        //{
+        //    _authenticationAndAuthorizationHelpers = authenticationAndAuthorizationHelpers;
+        //}
+
         [HttpGet("Public")]
         public IActionResult Public()
         {
@@ -45,29 +51,8 @@ namespace BackEndForClinicAPI.Controllers
         {
             var currentUser = GetCurrentUser();
 
-            return Ok($"Hi {currentUser.GivenName}, you are an {currentUser.Role}");
-        }
-
-
-
-        [HttpGet("Sellers")]
-        [Authorize(Roles = "Seller")]
-        public IActionResult SellersEndpoint()
-        {
-            var currentUser = GetCurrentUser();
-
             return Ok($"Hi {currentUser.GivenName}, you are a {currentUser.Role}");
         }
-
-        [HttpGet("AdminsAndSellers")]
-        [Authorize(Roles = "Administrator,Seller")]
-        public IActionResult AdminsAndSellersEndpoint()
-        {
-            var currentUser = GetCurrentUser();
-
-            return Ok($"Hi {currentUser.GivenName}, you are an {currentUser.Role}");
-        }
-
 
 
         private UserModel GetCurrentUser()

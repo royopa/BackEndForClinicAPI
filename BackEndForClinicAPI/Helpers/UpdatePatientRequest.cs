@@ -1,4 +1,4 @@
-﻿namespace BackEndForClinicAPI.Models
+﻿namespace BackEndForClinicAPI.Helpers
 {
     public class UpdatePatientRequest
     {

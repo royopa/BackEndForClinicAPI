@@ -1,9 +1,11 @@
 ﻿using BackEndForClinicAPI.Data;
+using BackEndForClinicAPI.DTOs;
 using BackEndForClinicAPI.Helpers;
 using BackEndForClinicAPI.Interfaces;
 using BackEndForClinicAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace BackEndForClinicAPI.Controllers
 {
@@ -18,11 +20,13 @@ namespace BackEndForClinicAPI.Controllers
             this.dbContext = dbContext;
         }
 
+
         [HttpGet]
         public async Task<IActionResult> GetDoctors()
         {
             return Ok(await dbContext.Doctors.ToListAsync());
         }
+
 
         [HttpGet]
         [Route("{id:guid}")]
@@ -96,7 +100,7 @@ namespace BackEndForClinicAPI.Controllers
                 doctor.Surname = updateDoctorRequest.Surname;
                 doctor.GivenName = updateDoctorRequest.GivenName;
                 doctor.UserName = updateDoctorRequest.UserName;
-                doctor.Password = PasswordEncrypterDecrypter.EncryptPassword(updateDoctorRequest.Password.ToString().ToLower()),
+                doctor.Password = PasswordEncrypterDecrypter.EncryptPassword(updateDoctorRequest.Password.ToString().ToLower());
                 doctor.Role = Roles.DOCTOR.ToString();
                 doctor.EmailAddress = updateDoctorRequest.EmailAddress;
                 doctor.Phone = updateDoctorRequest.Phone;
@@ -108,6 +112,25 @@ namespace BackEndForClinicAPI.Controllers
             }
 
             return NotFound();
+        }
+
+        
+        private static readonly Expression<Func<Appointment, AppointmentsDTO>> AsAppointmentListDto =
+            x => new AppointmentsDTO
+            {
+                AppointmentId = x.Id,
+                PatientId = x.PatientId,
+                AppointmentTime = x.AppointmentDateTime
+            };
+
+
+        [HttpGet("{id:guid}/slots")]
+        public IQueryable<AppointmentsDTO> GetAppointments([FromRoute] Guid id)
+        {
+
+            return dbContext.Appointments.Include(b => b.Doctor)
+                .Where(b => b.DoctorId == id)
+                .Select(AsAppointmentListDto);
         }
     }
 }
