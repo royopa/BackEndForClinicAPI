@@ -35,14 +35,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 //builder.Services.AddDbContext<BackEndForClinicAPIDBContext>(options => options.UseInMemoryDatabase("ClinicDB"));
 builder.Services.AddDbContext<BackEndForClinicAPIDBContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("BackEndForClinicAPI")));
-builder.Services.AddSingleton<AuthenticationAndAuthorizationHelpers>();
-builder.Services.AddSingleton<ConcurrentDictionary<string, string>>();
 
-//dependency injections for controllers
-builder.Services.AddScoped<IDoctorInterface, DoctorService>();
-builder.Services.AddScoped<IPatientInterface, PatientService>();
-builder.Services.AddScoped<IAppointmentInterface, AppointmentService>();
-builder.Services.AddScoped<IAdminInterface, AdminService>();
+//dependency injections for controllers and interfaces
+builder.Services.AddServicesForInterfaceAndControllers();
 
 builder.Services.AddMemoryCache();
 
