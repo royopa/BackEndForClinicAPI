@@ -17,10 +17,60 @@
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.23.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.23.1" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Migrations\" />
+    <Folder Include="Services\" />
+    <Folder Include="Controllers\Admin\" />
+    <Folder Include="Controllers\Appointments\" />
+    <Folder Include="Controllers\Doctors\" />
+    <Folder Include="Controllers\Patients\" />
+    <Folder Include="Controllers\Authentication\" />
+    <Folder Include="DTOs\Appointments\" />
+    <Folder Include="DTOs\Doctors\" />
+    <Folder Include="Models\Admin\" />
+    <Folder Include="Models\Appointment\" />
+    <Folder Include="Models\Doctor\" />
+    <Folder Include="Models\Patient\" />
+    <Folder Include="Models\Authentication\" />
+    <Folder Include="Models\User\" />
+    <Folder Include="Interfaces\Admin\" />
+    <Folder Include="Interfaces\Appointment\" />
+    <Folder Include="Interfaces\Doctor\" />
+    <Folder Include="Interfaces\Patient\" />
+    <Folder Include="Interfaces\Authentication\" />
+    <Folder Include="Services\Admin\" />
+    <Folder Include="Services\Appointment\" />
+    <Folder Include="Services\Doctor\" />
+    <Folder Include="Services\Patient\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Microsoft.Extensions.Caching.Memory" />
+    <None Remove="Services\" />
+    <None Remove="Controllers\Admin\" />
+    <None Remove="Controllers\Appointments\" />
+    <None Remove="Controllers\Doctors\" />
+    <None Remove="Controllers\Patients\" />
+    <None Remove="Controllers\Authentication\" />
+    <None Remove="DTOs\Appointments\" />
+    <None Remove="DTOs\Doctors\" />
+    <None Remove="Models\Admin\" />
+    <None Remove="Models\Appointment\" />
+    <None Remove="Models\Doctor\" />
+    <None Remove="Models\Patient\" />
+    <None Remove="Models\Authentication\" />
+    <None Remove="Models\User\" />
+    <None Remove="Interfaces\Admin\" />
+    <None Remove="Interfaces\Appointment\" />
+    <None Remove="Interfaces\Doctor\" />
+    <None Remove="Interfaces\Patient\" />
+    <None Remove="Interfaces\Authentication\" />
+    <None Remove="Services\Admin\" />
+    <None Remove="Services\Appointment\" />
+    <None Remove="Services\Doctor\" />
+    <None Remove="Services\Patient\" />
+  </ItemGroup>
 </Project>

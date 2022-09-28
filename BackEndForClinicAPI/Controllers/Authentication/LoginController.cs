@@ -1,11 +1,14 @@
 ﻿using BackEndForClinicAPI.Data;
+using BackEndForClinicAPI.Helpers;
 using BackEndForClinicAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
+using System.Collections.Concurrent;
 using System.IdentityModel.Tokens.Jwt;
 using System.Numerics;
 using System.Security.Claims;
@@ -19,13 +22,17 @@ namespace BackEndForClinicAPI.Controllers
     public class LoginController : ControllerBase
     {
         private IConfiguration _configuration;
-        private readonly BackEndForClinicAPIDBContext dbContext;
+        private readonly BackEndForClinicAPIDBContext _dbContext;
+        private readonly IMemoryCache _cache;
+        private readonly ConcurrentDictionary<string, string> _cd;
 
 
-        public LoginController(IConfiguration configuration, BackEndForClinicAPIDBContext dbContext)
+        public LoginController(IConfiguration configuration, BackEndForClinicAPIDBContext dbContext, IMemoryCache cache, ConcurrentDictionary<string, string> cd)
         {
             _configuration = configuration;
-            this.dbContext = dbContext;
+            _dbContext = dbContext;
+            _cache = cache;
+            _cd = cd;
         }
 
 
@@ -38,19 +45,41 @@ namespace BackEndForClinicAPI.Controllers
 
             if (user != null)
             {
-                
-                var token = GenerateToken(user);
-                var refreshToken = GenerateRefreshToken();
-                SetRefreshToken(refreshToken);
+                Token token = new Token();
+                token = _cache.Get<Token>(key: "UserIdForToken:" + id);
+                var response = new Token();
 
-                user.RefreshToken = refreshToken.Token;
-                user.TokenCreated = refreshToken.Created;
-                user.TokenExpires = refreshToken.Expires;
-                await dbContext.SaveChangesAsync();
+                if (token == null)
+                {
+                    var cacheEntryOptions = new MemoryCacheEntryOptions()
+                        .SetSlidingExpiration(TimeSpan.FromMinutes(1));
+                    var generatedToken = GenerateToken(user);
+
+                    response = new Token()
+                    {
+                        TokenGenerated = (string)generatedToken,
+                        ExpiryTime = DateTime.Now.AddMinutes(1),
+                        RefreshToken = GenerateRefreshToken(id),
+                        UserId = id
+                    };
+
+                    SetRefreshToken(response.RefreshToken);
+
+                    _cache.Set("UserIdForToken:" + id, response, cacheEntryOptions);
+                    return Ok(response);
+                }
                 return Ok(token);
+
+                //SetRefreshToken(response.RefreshToken);
+
+                //user.RefreshToken = refreshToken.Token;
+                //user.TokenCreated = refreshToken.Created;
+                //user.TokenExpires = refreshToken.Expires;
+                //await _dbContext.SaveChangesAsync();
+
             }
 
-            return NotFound("User not found.");
+            return NotFound("User with User ID:" + id + " not found.");
         }
 
 
@@ -64,22 +93,19 @@ namespace BackEndForClinicAPI.Controllers
             {
                 var refreshToken = Request.Cookies["refreshToken"];
 
-                if (!user.RefreshToken.Equals(refreshToken))
-                {
-                    return Unauthorized("Invalid Refresh Token.");
-                }
-                else if (user.TokenExpires < DateTime.Now)
-                {
-                    return Unauthorized("Token expired.");
-                }
+                //if (!user.RefreshToken.Equals(refreshToken))
+                //{
+                //    return Unauthorized("Invalid Refresh Token.");
+                //}
+                //else if (user.TokenExpires < DateTime.Now)
+                //{
+                //    return Unauthorized("Token expired.");
+                //}
 
                 string token = (string)GenerateToken(user);
-                var newRefreshToken = GenerateRefreshToken();
+                var newRefreshToken = GenerateRefreshToken(id);
                 SetRefreshToken(newRefreshToken);
-                user.RefreshToken = newRefreshToken.Token;
-                user.TokenCreated = newRefreshToken.Created;
-                user.TokenExpires = newRefreshToken.Expires;
-                await dbContext.SaveChangesAsync();
+                
                 return Ok(token);
             }
 
@@ -103,13 +129,14 @@ namespace BackEndForClinicAPI.Controllers
 
 
         [NonAction]
-        private RefreshToken GenerateRefreshToken()
+        private RefreshToken GenerateRefreshToken(Guid id)
         {
             var refreshToken = new RefreshToken
             {
                 Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
                 Created = DateTime.Now,
-                Expires = DateTime.Now.AddDays(7)
+                Expires = DateTime.Now.AddDays(7),
+                UserId = id
             };
 
             return refreshToken;
@@ -122,7 +149,7 @@ namespace BackEndForClinicAPI.Controllers
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            var claims = new[]
+            var claims = new List<Claim>()
             {
                 new Claim(ClaimTypes.NameIdentifier, userModel.UserName),
                 new Claim(ClaimTypes.Email, userModel.EmailAddress),
@@ -146,7 +173,7 @@ namespace BackEndForClinicAPI.Controllers
         [NonAction]
         private async Task<UserModel> Authenticate(Guid userId)
         {
-            UserModel currentUser = await dbContext.Doctors.FindAsync(userId);
+            UserModel currentUser = await _dbContext.Doctors.FindAsync(userId);
 
             if (currentUser != null)
             {
@@ -154,11 +181,20 @@ namespace BackEndForClinicAPI.Controllers
             }
             else
             {
-                currentUser = await dbContext.Patients.FindAsync(userId);
+                currentUser = await _dbContext.Patients.FindAsync(userId);
                 if (currentUser != null)
                 {
                     return currentUser;
 
+                }
+                else
+                {
+                    currentUser = await _dbContext.Admins.FindAsync(userId);
+                    if (currentUser != null)
+                    {
+                        return currentUser;
+
+                    }
                 }
             }
 

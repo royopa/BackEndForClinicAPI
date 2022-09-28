@@ -13,9 +13,6 @@
         public string FullName { get; set; }
         public long Phone { get; set; }
         public string Address { get; set; }
-        public string RefreshToken { get; set; } = string.Empty;
-        public DateTime TokenCreated { get; set; } = DateTime.Now;
-        public DateTime TokenExpires { get; set; }
 
 
     }

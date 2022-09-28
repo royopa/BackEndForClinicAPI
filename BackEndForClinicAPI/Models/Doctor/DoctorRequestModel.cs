@@ -1,6 +1,6 @@
 ﻿namespace BackEndForClinicAPI.Helpers
 {
-    public class AddDoctorRequest
+    public class DoctorRequestModel
     {
         public string FullName { get; set; }
         public string EmailAddress { get; set; }

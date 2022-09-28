@@ -8,6 +8,7 @@
         public Guid PatientId { get; set; }
         public Patient Patient { get; set; }
         public DateTime AppointmentDateTime { get; set; }
+        public int NumberOfSlots { get; set; }
 
     }
 }
